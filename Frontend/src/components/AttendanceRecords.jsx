@@ -244,27 +244,9 @@ const AttendanceRecords = () => {
                       Arrived: {timesheet.clock_in || "Time not recorded"}
                     </div>
                     <div className="text-xs text-gray-500">
-                      {(() => {
-                        if (timesheet.clock_in) {
-                          if (timesheet.clock_in) {
-                            const clockIn = new Date(
-                              `2000-01-01 ${timesheet.clock_in}`
-                            );
-                            const nineAM = new Date(`2000-01-01 09:00:00`);
-                            const diffMinutes = Math.floor(
-                              (clockIn - nineAM) / (1000 * 60)
-                            );
-                            return diffMinutes > 0
-                              ? `${diffMinutes} min late`
-                              : "On time";
-                          }
-                          return "Time not recorded";
-                          return diffMinutes > 0
-                            ? `${diffMinutes} min late`
-                            : "On time";
-                        }
-                        return "No clock in";
-                      })()}
+                      {timesheet.late_minutes
+                        ? `${timesheet.late_minutes} min late`
+                        : "On time"}
                     </div>
                   </div>
                 </div>

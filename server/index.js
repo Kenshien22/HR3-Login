@@ -7,9 +7,11 @@ const employeeRouter = require("./routes/employees");
 const timesheetRoutes = require("./routes/timesheet");
 const scheduleRoutes = require("./routes/schedule");
 const leaveRoutes = require("./routes/leave");
+const claimsRoutes = require("./routes/claims");
 const Shift = require("./models/Shift");
 const EmployeeSchedule = require("./models/EmployeeSchedule");
 const attendanceRoutes = require("./routes/attendance");
+const path = require("path");
 
 // IMPORT ALL MODELS
 const User = require("./models/User");
@@ -18,6 +20,8 @@ const Timesheet = require("./models/Timesheet");
 const Leave = require("./models/Leave");
 const Attendance = require("./models/Attendance");
 const seedShifts = require("./seeders/shiftSeeder");
+const cron = require("node-cron");
+const checkAbsences = require("./jobs/absenceChecker");
 
 // SCHEDULE ASSOCIATIONS
 Employee.hasMany(EmployeeSchedule, { foreignKey: "employee_id" });
@@ -35,6 +39,25 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// Test route for absence checker (NO AUTH for testing)
+app.get("/api/test/check-absences", async (req, res) => {
+  try {
+    await checkAbsences();
+    res.json({
+      success: true,
+      message: "Absence check completed. Check server terminal for details.",
+    });
+  } catch (error) {
+    console.error("Test route error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
 
 // Routes
 app.use("/api/auth", authRouter);
@@ -42,6 +65,7 @@ app.use("/api/employees", employeeRouter);
 app.use("/api/timesheet", timesheetRoutes);
 app.use("/api", scheduleRoutes);
 app.use("/api", leaveRoutes);
+app.use("/api", claimsRoutes);
 app.use("/api/attendance", attendanceRoutes);
 
 // Test route
@@ -125,5 +149,9 @@ process.on("SIGINT", async () => {
   await sequelize.close();
   process.exit(0);
 });
-
+// Schedule absence checker - runs daily at 11:59 PM
+cron.schedule("59 23 * * *", () => {
+  console.log("⏰ Running daily absence check...");
+  checkAbsences();
+});
 startServer();

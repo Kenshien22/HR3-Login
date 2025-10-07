@@ -279,11 +279,22 @@ const createLeaveRequest = async (req, res) => {
     const { employee_id, leave_type, start_date, end_date, reason, remarks } =
       req.body;
 
+    console.log("Creating leave request with data:", req.body); // DEBUG
+
     if (!employee_id || !leave_type || !start_date || !end_date || !reason) {
       return res.status(400).json({
         success: false,
         message:
           "Employee ID, leave type, start date, end date, and reason are required",
+      });
+    }
+
+    // Verify employee exists
+    const employee = await Employee.findByPk(employee_id);
+    if (!employee) {
+      return res.status(404).json({
+        success: false,
+        message: "Employee not found",
       });
     }
 
@@ -306,24 +317,38 @@ const createLeaveRequest = async (req, res) => {
       });
     }
 
+    // Calculate days requested
+    const timeDiff = endDate.getTime() - startDate.getTime();
+    const days_requested = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+
+    console.log(`Calculated days_requested: ${days_requested}`); // DEBUG
+
     const leave = await Leave.create({
       employee_id,
       leave_type,
       start_date,
       end_date,
+      days_requested, // ADD THIS LINE
       reason,
-      remarks,
+      remarks: remarks || null,
     });
+
+    console.log("Leave created successfully:", leave.id); // DEBUG
 
     res.status(201).json({
       success: true,
       data: leave,
+      message: "Leave request submitted successfully",
     });
   } catch (error) {
     console.error("Error in createLeaveRequest:", error);
+    console.error("Error details:", error.message); // MORE DEBUG
+    console.error("Error stack:", error.stack); // FULL ERROR
+
     res.status(500).json({
       success: false,
       message: "Internal server error",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };

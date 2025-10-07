@@ -3,7 +3,10 @@ import { useAuth } from "../context/authContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AttendanceWidget from "../components/AttendanceWidget";
-
+import EmployeeScheduleView from "../components/EmployeeScheduleView";
+import MyAttendanceView from "../components/MyAttendanceView";
+import LeaveRequest from "../components/LeaveRequest";
+import ClaimsSubmission from "../components/ClaimsSubmission";
 const EmployeeDashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -137,7 +140,16 @@ const EmployeeDashboard = () => {
             >
               My Attendance
             </button>
-
+            <button
+              onClick={() => setCurrentSection("my-schedule")}
+              className={
+                currentSection === "my-schedule"
+                  ? "w-full text-left px-4 py-2 bg-teal-600 text-white"
+                  : "w-full text-left px-4 py-2 hover:bg-gray-700 text-white"
+              }
+            >
+              My Schedule
+            </button>
             <button
               onClick={() => setCurrentSection("leave")}
               className={
@@ -158,17 +170,6 @@ const EmployeeDashboard = () => {
               }
             >
               Submit Claims
-            </button>
-
-            <button
-              onClick={() => setCurrentSection("schedule")}
-              className={
-                currentSection === "schedule"
-                  ? "block py-2 px-4 rounded bg-teal-600 text-white w-full text-left"
-                  : "block py-2 px-4 rounded hover:bg-gray-700 text-white transition-colors w-full text-left"
-              }
-            >
-              My Schedule
             </button>
 
             <button
@@ -309,38 +310,38 @@ const EmployeeDashboard = () => {
           )}
 
           {currentSection === "attendance" && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">My Attendance</h2>
-              <p className="text-gray-600 dark:text-gray-400">
-                Attendance records coming soon...
-              </p>
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+                My Attendance
+              </h2>
+              <MyAttendanceView />
             </div>
           )}
 
           {currentSection === "leave" && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">Leave Request</h2>
-              <p className="text-gray-600 dark:text-gray-400">
-                Leave request feature coming soon...
-              </p>
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+                Leave Request
+              </h2>
+              <LeaveRequest />
             </div>
           )}
 
           {currentSection === "claims" && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">Submit Claims</h2>
-              <p className="text-gray-600 dark:text-gray-400">
-                Claims submission feature coming soon...
-              </p>
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+                Submit Claims
+              </h2>
+              <ClaimsSubmission />
             </div>
           )}
 
-          {currentSection === "schedule" && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">My Schedule</h2>
-              <p className="text-gray-600 dark:text-gray-400">
-                Schedule view coming soon...
-              </p>
+          {currentSection === "my-schedule" && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+                My Schedule
+              </h2>
+              <EmployeeScheduleView />
             </div>
           )}
         </div>

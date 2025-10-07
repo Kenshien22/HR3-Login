@@ -189,15 +189,56 @@ Timesheet.getAllWithEmployeeInfo = async function (filters = {}) {
       ],
     });
 
+    // Calculate late_minutes for each timesheet
+    const EmployeeSchedule = require("./EmployeeSchedule");
+    const Shift = require("./Shift");
+
+    const enrichedData = await Promise.all(
+      timesheets.map(async (t) => {
+        const timesheetData = {
+          ...t.toJSON(),
+          employee_name: t.employee.fullName,
+          department: t.employee.department,
+          position: t.employee.position,
+          employeeId: t.employee.employeeId,
+          late_minutes: 0,
+        };
+
+        // Calculate late minutes if status is Late and clock_in exists
+        if (t.attendance_status === "Late" && t.clock_in) {
+          const schedule = await EmployeeSchedule.findOne({
+            where: {
+              employee_id: t.employee_id,
+              schedule_date: t.date,
+            },
+            include: [
+              {
+                model: Shift,
+                as: "Shift",
+                attributes: ["start_time"],
+              },
+            ],
+          });
+
+          if (schedule && schedule.Shift) {
+            const shiftStart = new Date(
+              `2000-01-01 ${schedule.Shift.start_time}`
+            );
+            const clockIn = new Date(`2000-01-01 ${t.clock_in}`);
+            const diffMs = clockIn - shiftStart;
+            const diffMinutes = Math.floor(diffMs / (1000 * 60));
+
+            timesheetData.late_minutes = Math.max(0, diffMinutes);
+          }
+        }
+
+        return timesheetData;
+      })
+    );
+
     return {
       success: true,
-      data: timesheets.map((t) => ({
-        ...t.toJSON(),
-        employee_name: t.employee.fullName,
-        department: t.employee.department,
-        position: t.employee.position,
-        employeeId: t.employee.employeeId,
-      })),
+      data: enrichedData,
     };
   } catch (error) {
     console.error("Error fetching all timesheets:", error);

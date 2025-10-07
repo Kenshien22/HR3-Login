@@ -15,6 +15,7 @@ import LeaveDatesStatus from "../components/LeaveDatesStatus";
 import EmployeeClaimsSubmission from "../components/EmployeeClaimsSubmission";
 import EmployeeReimbursement from "../components/EmployeeReimbursement";
 import TimeAttendanceRecords from "../components/TimeAttendanceRecords";
+
 const AdminDashboard = () => {
   const { user, loading, logout } = useAuth();
   const navigate = useNavigate();

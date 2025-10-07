@@ -20,7 +20,14 @@ const leaveController = {
     try {
       const { id } = req.params;
       const { status, remarks } = req.body;
-      const approved_by = req.user?.id || 1; // Get from auth or default
+
+      // Get employee ID from logged in user's email
+      const Employee = require("../models/Employee");
+      const approver = await Employee.findOne({
+        where: { email: req.user.email },
+      });
+
+      const approved_by = approver ? approver.id : null;
 
       const result = await Leave.updateStatus(id, status, approved_by, remarks);
       res.json(result);

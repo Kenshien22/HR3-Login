@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/authContext";
 import axios from "axios";
+import ClaimDetailModal from "./ClaimDetailModal";
 
 const EmployeeClaimsSubmission = () => {
   const { user } = useContext(AuthContext);
@@ -9,6 +10,8 @@ const EmployeeClaimsSubmission = () => {
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedType, setSelectedType] = useState("all");
   const [selectedDepartment, setSelectedDepartment] = useState("all");
+  const [selectedClaim, setSelectedClaim] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     fetchClaims();
@@ -17,11 +20,17 @@ const EmployeeClaimsSubmission = () => {
   const fetchClaims = async () => {
     try {
       setLoading(true);
-      // Empty array for now - will be populated when employee panel is ready
-      setClaims([]);
-      // TODO: Connect to actual API endpoint when backend is ready
-      // const response = await axios.get('/api/claims');
-      // setClaims(response.data);
+      const token = localStorage.getItem("token");
+
+      const response = await axios.get("http://localhost:3000/api/claims", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data.success) {
+        setClaims(response.data.data);
+      }
     } catch (error) {
       console.error("Error fetching claims:", error);
     } finally {
@@ -31,18 +40,54 @@ const EmployeeClaimsSubmission = () => {
 
   const handleApprove = async (claimId) => {
     if (window.confirm("Approve this claim?")) {
-      // API call to approve
-      alert(`Claim #${claimId} approved successfully!`);
-      fetchClaims();
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.put(
+          `http://localhost:3000/api/claims/${claimId}/status`,
+          {
+            status: "Approved",
+            remarks: "Approved by admin",
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (response.data.success) {
+          alert(`Claim #${claimId} approved successfully!`);
+          fetchClaims();
+        }
+      } catch (error) {
+        console.error("Error approving claim:", error);
+        alert("Failed to approve claim");
+      }
     }
   };
 
   const handleReject = async (claimId) => {
     const reason = prompt("Please provide reason for rejection:");
     if (reason) {
-      // API call to reject
-      alert(`Claim #${claimId} rejected.`);
-      fetchClaims();
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.put(
+          `http://localhost:3000/api/claims/${claimId}/status`,
+          {
+            status: "Rejected",
+            remarks: reason,
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (response.data.success) {
+          alert(`Claim #${claimId} rejected.`);
+          fetchClaims();
+        }
+      } catch (error) {
+        console.error("Error rejecting claim:", error);
+        alert("Failed to reject claim");
+      }
     }
   };
 
@@ -273,7 +318,13 @@ const EmployeeClaimsSubmission = () => {
                     >
                       Reject
                     </button>
-                    <button className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm font-medium">
+                    <button
+                      onClick={() => {
+                        setSelectedClaim(claim);
+                        setShowModal(true);
+                      }}
+                      className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm font-medium"
+                    >
                       View Details
                     </button>
                   </div>
@@ -358,7 +409,13 @@ const EmployeeClaimsSubmission = () => {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <button className="text-blue-500 hover:text-blue-700 text-sm">
+                    <button
+                      onClick={() => {
+                        setSelectedClaim(claim);
+                        setShowModal(true);
+                      }}
+                      className="text-blue-500 hover:text-blue-700 text-sm"
+                    >
                       View
                     </button>
                   </td>
@@ -368,6 +425,16 @@ const EmployeeClaimsSubmission = () => {
           </table>
         </div>
       </div>
+      {/* Modal */}
+      {showModal && (
+        <ClaimDetailModal
+          claim={selectedClaim}
+          onClose={() => {
+            setShowModal(false);
+            setSelectedClaim(null);
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -47,7 +47,8 @@ const clockIn = async (req, res) => {
       date: dateOnly,
     });
 
-    const schedule = await EmployeeSchedule.findOne({
+    // Check today's schedule
+    let schedule = await EmployeeSchedule.findOne({
       where: {
         employee_id: employee.id,
         schedule_date: dateOnly,
@@ -59,6 +60,40 @@ const clockIn = async (req, res) => {
         },
       ],
     });
+
+    // If no schedule today, check yesterday's schedule (for night shift that ends today)
+    if (!schedule) {
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayDate = yesterday.toISOString().split("T")[0];
+
+      schedule = await EmployeeSchedule.findOne({
+        where: {
+          employee_id: employee.id,
+          schedule_date: yesterdayDate,
+        },
+        include: [
+          {
+            model: Shift,
+            foreignKey: "shift_id",
+          },
+        ],
+      });
+
+      // Check if shift ends today (night shift logic)
+      if (schedule && schedule.Shift) {
+        const [endHour] = schedule.Shift.end_time.split(":").map(Number);
+        const [startHour] = schedule.Shift.start_time.split(":").map(Number);
+
+        // If end time is less than start time, it's an overnight shift
+        if (endHour < startHour) {
+          console.log("Found overnight shift from yesterday");
+        } else {
+          // Not an overnight shift, ignore yesterday's schedule
+          schedule = null;
+        }
+      }
+    }
 
     console.log("Found schedule:", schedule ? "YES" : "NO");
     if (schedule) {
@@ -89,7 +124,13 @@ const clockIn = async (req, res) => {
         );
       }
     } else {
+      // NO SCHEDULE - BLOCK CLOCK IN
       console.log(`No schedule found for ${employee.fullName} today`);
+      return res.status(400).json({
+        success: false,
+        message:
+          "You don't have a schedule for today. Please contact your supervisor.",
+      });
     }
 
     // Create attendance record

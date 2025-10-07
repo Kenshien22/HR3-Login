@@ -115,13 +115,30 @@ const login = async (req, res) => {
   }
 };
 
-// Verify controller - for token verification
 const verify = async (req, res) => {
   try {
-    // User info is already available from auth middleware
-    const user = await User.findByPk(req.user.id || req.user._id);
+    const userId = req.user.id || req.user._id;
+    let user = await User.findByPk(userId);
 
+    // If not in User table, check Employee table
     if (!user) {
+      user = await Employee.findByPk(userId);
+
+      if (user) {
+        // Convert employee to user format
+        return res.json({
+          success: true,
+          message: "Token is valid",
+          user: {
+            id: user.id,
+            _id: user.id,
+            name: user.fullName,
+            email: user.email,
+            role: user.role,
+          },
+        });
+      }
+
       return res.status(404).json({
         success: false,
         message: "User not found",
@@ -140,14 +157,14 @@ const verify = async (req, res) => {
       message: "Token is valid",
       user: {
         id: user.id,
-        _id: user.id, // Frontend compatibility
-        name: user.name, // Frontend expects 'name'
+        _id: user.id,
+        name: user.name,
         email: user.email,
         role: user.role,
       },
     });
   } catch (error) {
-    console.error("âŒ Token verification error:", error);
+    console.error("Token verification error:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error",

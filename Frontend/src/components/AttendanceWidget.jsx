@@ -103,7 +103,16 @@ const AttendanceWidget = () => {
       minute: "2-digit",
     });
   };
+  const calculateElapsedTime = (clockInTime) => {
+    if (!clockInTime) return "0.0";
 
+    const clockIn = new Date(clockInTime);
+    const now = new Date();
+    const diffMs = now - clockIn;
+    const hours = (diffMs / (1000 * 60 * 60)).toFixed(1);
+
+    return hours;
+  };
   return (
     <div className="space-y-4">
       {/* Current Time Display */}
@@ -141,7 +150,10 @@ const AttendanceWidget = () => {
         <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded">
           <p className="text-xs text-gray-600 dark:text-gray-400">Work Hours</p>
           <p className="text-xl font-semibold text-purple-600 dark:text-purple-400">
-            {clockStatus.workHours || "0"} hrs
+            {clockStatus.clockedIn && !clockStatus.clockedOut
+              ? calculateElapsedTime(clockStatus.clockInTime)
+              : clockStatus.workHours || "0"}{" "}
+            hrs
           </p>
         </div>
       </div>

@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import ClaimDetailModal from "./ClaimDetailModal";
 
 const EmployeeReimbursement = () => {
   const [reimbursements, setReimbursements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
+  const [selectedClaim, setSelectedClaim] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     fetchReimbursements();
@@ -13,11 +16,21 @@ const EmployeeReimbursement = () => {
   const fetchReimbursements = async () => {
     try {
       setLoading(true);
-      // Empty array for now - will be populated when claims are approved
-      setReimbursements([]);
-      // TODO: Connect to actual API endpoint when backend is ready
-      // const response = await axios.get('/api/reimbursements');
-      // setReimbursements(response.data);
+      const token = localStorage.getItem("token");
+
+      const response = await axios.get("http://localhost:3000/api/claims", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data.success) {
+        // Only show APPROVED claims
+        const approvedClaims = response.data.data.filter(
+          (claim) => claim.status === "Approved"
+        );
+        setReimbursements(approvedClaims);
+      }
     } catch (error) {
       console.error("Error fetching reimbursements:", error);
     } finally {
@@ -130,36 +143,33 @@ const EmployeeReimbursement = () => {
                   key={reimb.id}
                   className="hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
-                  <td className="px-4 py-3 font-medium">{reimb.claim_id}</td>
+                  <td className="px-4 py-3 font-medium">CLM-00{reimb.id}</td>
                   <td className="px-4 py-3">{reimb.employee_name}</td>
                   <td className="px-4 py-3">
                     ₱{reimb.amount.toLocaleString()}
                   </td>
-                  <td className="px-4 py-3">{reimb.payment_method}</td>
-                  <td className="px-4 py-3">{reimb.payment_date || "-"}</td>
-                  <td className="px-4 py-3">{reimb.reference || "-"}</td>
+                  <td className="px-4 py-3">Bank Transfer</td>
                   <td className="px-4 py-3">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        reimb.status === "Completed"
-                          ? "bg-green-100 text-green-700"
-                          : reimb.status === "Processing"
-                          ? "bg-yellow-100 text-yellow-700"
-                          : "bg-gray-100 text-gray-700"
-                      }`}
-                    >
-                      {reimb.status}
+                    {reimb.approved_date
+                      ? new Date(reimb.approved_date).toLocaleDateString()
+                      : "-"}
+                  </td>
+                  <td className="px-4 py-3">{reimb.receipt_number || "-"}</td>
+                  <td className="px-4 py-3">
+                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                      Approved
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    {reimb.status === "Processing" && (
-                      <button
-                        onClick={() => processReimbursement(reimb.id)}
-                        className="text-blue-500 hover:text-blue-700 text-sm"
-                      >
-                        Process
-                      </button>
-                    )}
+                    <button
+                      onClick={() => {
+                        setSelectedClaim(reimb);
+                        setShowModal(true);
+                      }}
+                      className="text-blue-500 hover:text-blue-700 text-sm"
+                    >
+                      View Receipt
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -167,6 +177,16 @@ const EmployeeReimbursement = () => {
           </table>
         </div>
       </div>
+      {/* Modal */}
+      {showModal && (
+        <ClaimDetailModal
+          claim={selectedClaim}
+          onClose={() => {
+            setShowModal(false);
+            setSelectedClaim(null);
+          }}
+        />
+      )}
     </div>
   );
 };
