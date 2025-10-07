@@ -7,6 +7,8 @@ import EmployeeScheduleView from "../components/EmployeeScheduleView";
 import MyAttendanceView from "../components/MyAttendanceView";
 import LeaveRequest from "../components/LeaveRequest";
 import ClaimsSubmission from "../components/ClaimsSubmission";
+import API_URL from "../config/api";
+
 const EmployeeDashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -42,12 +44,9 @@ const EmployeeDashboard = () => {
     try {
       const token = localStorage.getItem("token");
       // Fetch employee data using email
-      const response = await axios.get(
-        `http://localhost:3000/api/employees/profile`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await axios.get(`${API_URL}/api/employees/profile`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (response.data.success) {
         setEmployeeData(response.data.data);

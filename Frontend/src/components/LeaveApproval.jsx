@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/authContext";
 import axios from "axios";
+import API_URL from "../config/api";
 
 const LeaveApproval = () => {
   const { user } = useContext(AuthContext);
@@ -17,10 +18,9 @@ const LeaveApproval = () => {
       setLoading(true);
       const token = localStorage.getItem("token");
 
-      const response = await axios.get(
-        "http://localhost:3000/api/leaves/pending",
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await axios.get("${API_URL}/api/leaves/pending", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (response.data.success) {
         setPendingLeaves(response.data.data);
@@ -38,7 +38,7 @@ const LeaveApproval = () => {
       const token = localStorage.getItem("token");
 
       const response = await axios.put(
-        `http://localhost:3000/api/leaves/${leaveId}/status`,
+        `${API_URL}/api/leaves/${leaveId}/status`,
         { status, remarks },
         { headers: { Authorization: `Bearer ${token}` } }
       );

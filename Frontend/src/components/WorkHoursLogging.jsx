@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/authContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import API_URL from "../config/api";
 
 const WorkHoursLogging = () => {
   const { user, loading } = useAuth();
@@ -68,7 +69,7 @@ const WorkHoursLogging = () => {
   const fetchEmployees = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/employees",
+        "${API_URL}/api/employees",
         getAuthHeaders()
       );
       if (response.data.success) {
@@ -93,7 +94,7 @@ const WorkHoursLogging = () => {
         params.append("department", filters.department);
 
       const response = await axios.get(
-        `http://localhost:3000/api/timesheet?${params.toString()}`,
+        `${API_URL}/api/timesheet?${params.toString()}`,
         getAuthHeaders()
       );
 
@@ -114,7 +115,7 @@ const WorkHoursLogging = () => {
       params.append("end_date", dateRange.end);
 
       const response = await axios.get(
-        `http://localhost:3000/api/timesheet/stats?${params.toString()}`,
+        `${API_URL}/api/timesheet/stats?${params.toString()}`,
         getAuthHeaders()
       );
 
@@ -165,7 +166,7 @@ const WorkHoursLogging = () => {
       if (editingEntry) {
         // Update existing entry
         const response = await axios.put(
-          `http://localhost:3000/api/timesheet/${editingEntry.id}`,
+          `${API_URL}/api/timesheet/${editingEntry.id}`,
           formData,
           getAuthHeaders()
         );
@@ -176,7 +177,7 @@ const WorkHoursLogging = () => {
       } else {
         // Create new entry
         const response = await axios.post(
-          "http://localhost:3000/api/timesheet",
+          "${API_URL}/api/timesheet",
           formData,
           getAuthHeaders()
         );
@@ -223,7 +224,7 @@ const WorkHoursLogging = () => {
     ) {
       try {
         const response = await axios.delete(
-          `http://localhost:3000/api/timesheet/${id}`,
+          `${API_URL}/api/timesheet/${id}`,
           getAuthHeaders()
         );
 

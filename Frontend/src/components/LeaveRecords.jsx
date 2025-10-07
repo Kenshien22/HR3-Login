@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/authContext";
 import axios from "axios";
+import API_URL from "../config/api";
 
 const LeaveRecords = () => {
   const { user } = useContext(AuthContext);
@@ -33,8 +34,7 @@ const LeaveRecords = () => {
 
       const response = await axios.get(
         `${
-          import.meta.env.VITE_REACT_APP_BACKEND_BASEURL ||
-          "http://localhost:3000"
+          import.meta.env.VITE_REACT_APP_BACKEND_BASEURL || "${API_URL}"
         }/api/timesheet?start_date=${startDate}&end_date=${endDate}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );

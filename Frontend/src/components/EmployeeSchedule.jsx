@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/authContext";
 import axios from "axios";
+import API_URL from "../config/api";
 
 const EmployeeSchedule = () => {
   const { user } = useContext(AuthContext);
@@ -40,7 +41,7 @@ const EmployeeSchedule = () => {
   const fetchEmployees = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:3000/api/employees", {
+      const response = await axios.get("${API_URL}/api/employees", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -55,7 +56,7 @@ const EmployeeSchedule = () => {
   const fetchShifts = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:3000/api/shifts", {
+      const response = await axios.get("${API_URL}/api/shifts", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -93,7 +94,7 @@ const EmployeeSchedule = () => {
       const endDate = weekDates[6];
 
       const response = await axios.get(
-        `http://localhost:3000/api/schedules?start_date=${startDate}&end_date=${endDate}`,
+        `${API_URL}/api/schedules?start_date=${startDate}&end_date=${endDate}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -126,7 +127,7 @@ const EmployeeSchedule = () => {
 
       if (shiftId === null) {
         // Remove assignment
-        await axios.delete("http://localhost:3000/api/schedules/remove", {
+        await axios.delete("${API_URL}/api/schedules/remove", {
           headers: { Authorization: `Bearer ${token}` },
           data: {
             employee_id: employeeId,
@@ -145,7 +146,7 @@ const EmployeeSchedule = () => {
       } else {
         // Add/update assignment
         await axios.post(
-          "http://localhost:3000/api/schedules/assign",
+          "${API_URL}/api/schedules/assign",
           {
             employee_id: employeeId,
             shift_id: shiftId,
@@ -221,7 +222,7 @@ const EmployeeSchedule = () => {
         for (const employee of filteredEmployees) {
           const key = `${date}_${employee.id}`;
           if (schedules[key]) {
-            await axios.delete("http://localhost:3000/api/schedules/remove", {
+            await axios.delete("${API_URL}/api/schedules/remove", {
               headers: { Authorization: `Bearer ${token}` },
               data: {
                 employee_id: employee.id,
@@ -251,7 +252,7 @@ const EmployeeSchedule = () => {
         // Monday to Friday
         for (const emp of filteredEmployees) {
           await axios.post(
-            "http://localhost:3000/api/schedules/assign",
+            "${API_URL}/api/schedules/assign",
             {
               employee_id: emp.id,
               shift_id: 1, // Morning shift

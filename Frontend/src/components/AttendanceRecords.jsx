@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/authContext";
 import axios from "axios";
+import API_URL from "../config/api";
 
 const AttendanceRecords = () => {
   const { user } = useContext(AuthContext);
@@ -42,8 +43,7 @@ const AttendanceRecords = () => {
 
       const response = await axios.get(
         `${
-          import.meta.env.VITE_REACT_APP_BACKEND_BASEURL ||
-          "http://localhost:3000"
+          import.meta.env.VITE_REACT_APP_BACKEND_BASEURL || "${API_URL}"
         }/api/timesheet?${params}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );

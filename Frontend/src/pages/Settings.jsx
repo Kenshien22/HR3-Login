@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/authContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
+import API_URL from "../config/api";
 const Settings = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -70,7 +70,7 @@ const Settings = () => {
 
       // API call to change password
       const response = await axios.post(
-        "http://localhost:3000/api/auth/change-password",
+        `${API_URL}/api/auth/change-password`,
         {
           currentPassword: passwordData.currentPassword,
           newPassword: passwordData.newPassword,

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import API_URL from "../config/api";
 
 const LeaveRequest = () => {
   const [loading, setLoading] = useState(false);
@@ -38,7 +39,7 @@ const LeaveRequest = () => {
 
       // Get employee ID from email
       const profileResponse = await axios.get(
-        "http://localhost:3000/api/employees/profile",
+        "${API_URL}/api/employees/profile",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -48,7 +49,7 @@ const LeaveRequest = () => {
 
       // Submit leave request
       const response = await axios.post(
-        "http://localhost:3000/api/timesheet/leave",
+        "${API_URL}/api/timesheet/leave",
         {
           employee_id,
           leave_type: formData.leave_type,

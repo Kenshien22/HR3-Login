@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import API_URL from "../config/api";
 
 const EmployeeAttendanceView = () => {
   const [attendance, setAttendance] = useState([]);
@@ -18,12 +19,9 @@ const EmployeeAttendanceView = () => {
   const fetchMyAttendance = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(
-        "http://localhost:3000/api/attendance/my-records",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await axios.get("${API_URL}/api/attendance/my-records", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (response.data.success) {
         setAttendance(response.data.data);

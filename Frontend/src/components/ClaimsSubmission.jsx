@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import API_URL from "../config/api";
 
 const ClaimsSubmission = () => {
   const [loading, setLoading] = useState(false);
@@ -45,7 +46,7 @@ const ClaimsSubmission = () => {
 
       // Get employee ID
       const profileResponse = await axios.get(
-        "http://localhost:3000/api/employees/profile",
+        "${API_URL}/api/employees/profile",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -66,16 +67,12 @@ const ClaimsSubmission = () => {
         submitData.append("receipt_image", receiptFile);
       }
 
-      const response = await axios.post(
-        "http://localhost:3000/api/claims",
-        submitData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.post("${API_URL}/api/claims", submitData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
       if (response.data.success) {
         alert("Claim submitted successfully!");
         setFormData({

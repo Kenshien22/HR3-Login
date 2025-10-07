@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import API_URL from "../config/api";
 
 const EmployeeScheduleView = () => {
   const [schedule, setSchedule] = useState([]);
@@ -12,12 +13,9 @@ const EmployeeScheduleView = () => {
   const fetchMySchedule = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(
-        "http://localhost:3000/api/my-schedule",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await axios.get("${API_URL}/api/my-schedule", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (response.data.success) {
         setSchedule(response.data.data);

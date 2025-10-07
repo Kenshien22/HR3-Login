@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import API_URL from "../config/api";
 
 const TimeAttendanceRecords = () => {
   const [records, setRecords] = useState([]);
@@ -24,7 +25,7 @@ const TimeAttendanceRecords = () => {
   const fetchRecords = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/attendance/all",
+        "${API_URL}/api/attendance/all",
         getAuthHeaders()
       );
 

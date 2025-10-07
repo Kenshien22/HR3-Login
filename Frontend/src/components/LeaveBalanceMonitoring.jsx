@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/authContext";
 import axios from "axios";
+import API_URL from "../config/api";
 
 const LeaveBalanceMonitoring = () => {
   const { user } = useContext(AuthContext);
@@ -28,7 +29,7 @@ const LeaveBalanceMonitoring = () => {
       const token = localStorage.getItem("token");
 
       const response = await axios.get(
-        `http://localhost:3000/api/leaves/balances?year=${selectedYear}`,
+        `${API_URL}/api/leaves/balances?year=${selectedYear}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

@@ -1,6 +1,9 @@
 import axios from "axios";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
+// API Base URL - automatically uses production URL when deployed
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
 // Named export for AuthContext
 export const AuthContext = createContext();
 
@@ -14,14 +17,11 @@ const AuthContextProvider = ({ children }) => {
 
       if (token) {
         try {
-          const response = await axios.get(
-            "http://localhost:3000/api/auth/verify",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+          const response = await axios.get(`${API_URL}/api/auth/verify`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
 
           if (response.data.success) {
             console.log("Token verified successfully:", response.data.user);

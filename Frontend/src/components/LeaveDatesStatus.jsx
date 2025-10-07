@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/authContext";
 import axios from "axios";
+import API_URL from "../config/api";
 
 const LeaveDatesStatus = () => {
   const { user } = useContext(AuthContext);
@@ -50,10 +51,9 @@ const LeaveDatesStatus = () => {
       if (departmentFilter !== "all")
         params.append("department", departmentFilter);
 
-      const response = await axios.get(
-        `http://localhost:3000/api/leaves?${params}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await axios.get(`${API_URL}/api/leaves?${params}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (response.data.success) {
         setLeaves(response.data.data);

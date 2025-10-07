@@ -15,6 +15,7 @@ import LeaveDatesStatus from "../components/LeaveDatesStatus";
 import EmployeeClaimsSubmission from "../components/EmployeeClaimsSubmission";
 import EmployeeReimbursement from "../components/EmployeeReimbursement";
 import TimeAttendanceRecords from "../components/TimeAttendanceRecords";
+import API_URL from "../config/api";
 
 const AdminDashboard = () => {
   const { user, loading, logout } = useAuth();
@@ -129,7 +130,7 @@ const AdminDashboard = () => {
   const fetchEmployees = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/employees",
+        `${API_URL}/api/employees`,
         getAuthHeaders()
       );
 
@@ -149,7 +150,7 @@ const AdminDashboard = () => {
   const fetchStats = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/employees/stats",
+        `${API_URL}/api/employees/stats`,
         getAuthHeaders()
       );
 
@@ -169,7 +170,7 @@ const AdminDashboard = () => {
     console.log("Calling fetchTimesheetStats...");
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/timesheet/stats",
+        `${API_URL}/api/timesheet/stats`,
         getAuthHeaders()
       );
       console.log("Timesheet stats response:", response.data);
@@ -303,7 +304,7 @@ const AdminDashboard = () => {
     try {
       if (editingEmployee) {
         const response = await axios.put(
-          `http://localhost:3000/api/employees/${editingEmployee.id}`,
+          `${API_URL}/api/employees/${editingEmployee.id}`,
           formData,
           getAuthHeaders()
         );
@@ -317,7 +318,7 @@ const AdminDashboard = () => {
         }
       } else {
         const response = await axios.post(
-          "http://localhost:3000/api/employees",
+          `${API_URL}/api/employees`,
           formData,
           getAuthHeaders()
         );
@@ -369,7 +370,7 @@ const AdminDashboard = () => {
     if (window.confirm(`Are you sure you want to delete ${employeeName}?`)) {
       try {
         const response = await axios.delete(
-          `http://localhost:3000/api/employees/${id}`,
+          `${API_URL}/api/employees/${id}`,
           getAuthHeaders()
         );
 

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext"; // FIXED: removed 's' from contexts
 import logo from "../assets/logo.png";
 import axios from "axios";
+import API_URL from "../config/api";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -24,7 +25,7 @@ const Login = () => {
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
       const response = await axios.post(
-        "http://localhost:3000/api/auth/login",
+        `${API_URL}/api/auth/login/api/auth/login`,
         { email, password },
         {
           signal: controller.signal,

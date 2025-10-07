@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import API_URL from "../config/api";
 
 const AttendanceWidget = () => {
   const [clockStatus, setClockStatus] = useState({
@@ -36,7 +37,7 @@ const AttendanceWidget = () => {
   const fetchAttendanceStatus = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/attendance/status",
+        "${API_URL}/api/attendance/status",
         getAuthHeaders()
       );
 
@@ -52,7 +53,7 @@ const AttendanceWidget = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/attendance/clock-in",
+        "${API_URL}/api/attendance/clock-in",
         {},
         getAuthHeaders()
       );
@@ -77,7 +78,7 @@ const AttendanceWidget = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/attendance/clock-out",
+        "${API_URL}/api/attendance/clock-out",
         {},
         getAuthHeaders()
       );

@@ -1,4 +1,5 @@
 import React from "react";
+import API_URL from "../config/api";
 
 const ClaimDetailModal = ({ claim, onClose }) => {
   if (!claim) return null;
@@ -138,10 +139,7 @@ const ClaimDetailModal = ({ claim, onClose }) => {
               <h3 className="text-lg font-semibold mb-3">Receipt Image</h3>
               <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                 <img
-                  src={`http://localhost:3000/${claim.receipt_image.replace(
-                    /\\/g,
-                    "/"
-                  )}`}
+                  src={`${API_URL}/${claim.receipt_image.replace(/\\/g, "/")}`}
                   alt="Receipt"
                   className="max-w-full h-auto rounded-lg border border-gray-300"
                   onError={(e) => {
@@ -151,10 +149,7 @@ const ClaimDetailModal = ({ claim, onClose }) => {
                   }}
                 />
                 <a
-                  href={`http://localhost:3000/${claim.receipt_image.replace(
-                    /\\/g,
-                    "/"
-                  )}`}
+                  href={`${API_URL}/${claim.receipt_image.replace(/\\/g, "/")}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-3 inline-block text-blue-500 hover:text-blue-700 text-sm"

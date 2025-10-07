@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/authContext";
 import axios from "axios";
 import ClaimDetailModal from "./ClaimDetailModal";
+import API_URL from "../config/api";
 
 const EmployeeClaimsSubmission = () => {
   const { user } = useContext(AuthContext);
@@ -22,7 +23,7 @@ const EmployeeClaimsSubmission = () => {
       setLoading(true);
       const token = localStorage.getItem("token");
 
-      const response = await axios.get("http://localhost:3000/api/claims", {
+      const response = await axios.get("${API_URL}/api/claims", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -43,7 +44,7 @@ const EmployeeClaimsSubmission = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.put(
-          `http://localhost:3000/api/claims/${claimId}/status`,
+          `${API_URL}/api/claims/${claimId}/status`,
           {
             status: "Approved",
             remarks: "Approved by admin",
@@ -70,7 +71,7 @@ const EmployeeClaimsSubmission = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.put(
-          `http://localhost:3000/api/claims/${claimId}/status`,
+          `${API_URL}/api/claims/${claimId}/status`,
           {
             status: "Rejected",
             remarks: reason,
